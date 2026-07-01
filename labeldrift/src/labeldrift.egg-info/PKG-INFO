@@ -1,0 +1,134 @@
+Metadata-Version: 2.4
+Name: labeldrift
+Version: 0.1.0
+Summary: Find hardcoded label/enum strings that have drifted from their canonical constant definitions.
+Author: Matt
+License: MIT
+Project-URL: Repository, https://github.com/mjlak1000/labeldrift
+Keywords: linter,static-analysis,enums,constants,code-quality
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Software Development :: Quality Assurance
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: tomli>=2.0; python_version < "3.11"
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4; extra == "dev"
+Requires-Dist: pytest-cov; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Dynamic: license-file
+
+# labeldrift
+
+Find hardcoded label/enum strings that have drifted from their canonical
+constant definitions.
+
+Most codebases of any size define a module of canonical string constants
+(`STATUS_ACTIVE = "ACTIVE"`, `PRIORITY_HIGH = "HIGH"`, ...) and then, over
+time, someone writes `"ACTIVE"` or `"HIGH"` directly instead of importing the
+constant. The literal still works at runtime, so nothing breaks — until the
+canonical value changes and the bare string doesn't, or a typo (`"ACTVE"`)
+slips through with no error. `labeldrift` catches the drift before it ships.
+
+It is config-driven and AST-based: it doesn't need to import your code, so
+it works even on packages with heavy runtime dependencies, and it never
+produces false positives from comments (only exact string-literal matches).
+
+## Install
+
+```bash
+pip install labeldrift
+```
+
+## Quickstart
+
+Add a `labeldrift.toml` next to your `pyproject.toml`:
+
+```toml
+[source]
+module = "myproject.labels"   # used only to make messages actionable
+
+[[label]]
+value = "CRITICAL"
+constant = "PRIORITY_CRITICAL"
+
+[[label]]
+value = "HIGH"
+constant = "PRIORITY_HIGH"
+# Ambiguous single words are common across unrelated domains — scope
+# them to the paths where they're actually a label, not just English:
+context = ["myproject/billing", "myproject/alerts"]
+```
+
+Then run:
+
+```bash
+labeldrift check src/
+```
+
+```
+✗ Found 2 label drift violation(s) in 1 file(s):
+
+  src/myproject/billing/invoice.py:42: use myproject.labels.PRIORITY_CRITICAL instead of bare string 'CRITICAL'
+  src/myproject/alerts/rules.py:17: use myproject.labels.PRIORITY_HIGH instead of bare string 'HIGH'
+```
+
+Exit code is `0` when clean, `1` when violations are found, `2` on
+configuration/usage errors — drop it straight into CI.
+
+## Config
+
+Config can live in either place (checked in this order):
+
+1. An explicit file: `labeldrift check src/ --config path/to/labeldrift.toml`
+2. `./labeldrift.toml`
+3. A `[tool.labeldrift]` table inside `./pyproject.toml`
+
+| Key | Required | Meaning |
+|---|---|---|
+| `source.module` | no | Dotted module path shown in violation messages |
+| `[[label]]` | yes (at least one) | One rule per literal to detect |
+| `label.value` | yes | The exact string literal to flag |
+| `label.constant` | yes | The canonical constant name to suggest instead |
+| `label.context` | no | List of path substrings; if set, only flag inside paths containing one of them. Omit to flag everywhere. |
+| `exclude.paths` | no | Path substrings to skip entirely (defaults to `.venv`, `__pycache__`, `node_modules`, `.git`) |
+
+The `context` field is the key design point: a value like `"HIGH"` is too
+common an English word to flag globally without noise, but inside
+`myproject/alerts/` it unambiguously means a priority level. Scope each rule
+to where it's actually a label.
+
+## Pre-commit
+
+```yaml
+- repo: https://github.com/mjlak1000/labeldrift
+  rev: v0.1.0
+  hooks:
+    - id: labeldrift
+```
+
+## CI (GitHub Actions)
+
+```yaml
+- name: Check label drift
+  run: pip install labeldrift && labeldrift check src/
+```
+
+## Why not just use pylint's magic-value check?
+
+Generic magic-value linters flag *any* unnamed literal — useful, but noisy,
+and they don't know which literals are actually your project's enum values
+versus ordinary strings. `labeldrift` is narrower on purpose: you tell it
+exactly which values matter and where, so every hit is a real, actionable
+fix back to a named constant.
+
+## Development
+
+```bash
+pip install -e ".[dev]"
+pytest
+ruff check src/ tests/
+```

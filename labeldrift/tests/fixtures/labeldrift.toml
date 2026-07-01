@@ -1,0 +1,14 @@
+[source]
+module = "fixtures.labels"
+
+[[label]]
+value = "CRITICAL"
+constant = "PRIORITY_CRITICAL"
+
+[[label]]
+value = "HIGH_RISK"
+constant = "PSYOP_HIGH_RISK"
+context = ["psyop"]
+
+[exclude]
+paths = [".venv", "__pycache__", "labels.py"]

@@ -1,0 +1,103 @@
+# Example: the exact rule set SPEC-1's bespoke check_hardcoded_labels.py
+# script encoded by hand. This is what it looks like generalized.
+
+[source]
+module = "spec1_labels"
+
+[[label]]
+value = "CRITICAL"
+constant = "PRIORITY_CRITICAL"
+context = ["cls_leads"]
+
+[[label]]
+value = "HIGH"
+constant = "PRIORITY_HIGH or THREAT_HIGH"
+context = ["cls_psyop", "cls_leads"]
+
+[[label]]
+value = "MEDIUM"
+constant = "PRIORITY_MEDIUM or THREAT_MEDIUM"
+context = ["cls_psyop", "cls_leads"]
+
+[[label]]
+value = "LOW"
+constant = "PRIORITY_LOW or THREAT_LOW"
+context = ["cls_psyop", "cls_leads"]
+
+[[label]]
+value = "HIGH_RISK"
+constant = "PSYOP_HIGH_RISK"
+context = ["cls_psyop", "cls_leads"]
+
+[[label]]
+value = "MEDIUM_RISK"
+constant = "PSYOP_MEDIUM_RISK"
+context = ["cls_psyop", "cls_leads"]
+
+[[label]]
+value = "LOW_RISK"
+constant = "PSYOP_LOW_RISK"
+context = ["cls_psyop", "cls_leads"]
+
+[[label]]
+value = "CLEAN"
+constant = "PSYOP_CLEAN"
+context = ["cls_psyop"]
+
+[[label]]
+value = "HOUSE"
+constant = "CHAMBER_HOUSE"
+context = ["congressional", "cls_congressional"]
+
+[[label]]
+value = "SENATE"
+constant = "CHAMBER_SENATE"
+context = ["congressional", "cls_congressional"]
+
+[[label]]
+value = "INTRODUCED"
+constant = "CONGRESS_STATUS_INTRODUCED"
+context = ["congressional", "cls_congressional"]
+
+[[label]]
+value = "PASSED_HOUSE"
+constant = "CONGRESS_STATUS_PASSED_HOUSE"
+context = ["congressional", "cls_congressional"]
+
+[[label]]
+value = "PASSED_SENATE"
+constant = "CONGRESS_STATUS_PASSED_SENATE"
+context = ["congressional", "cls_congressional"]
+
+[[label]]
+value = "ENACTED"
+constant = "CONGRESS_STATUS_ENACTED"
+context = ["congressional", "cls_congressional"]
+
+[[label]]
+value = "FAILED"
+constant = "CONGRESS_STATUS_FAILED"
+context = ["congressional", "cls_congressional"]
+
+[[label]]
+value = "BILL"
+constant = "RECORD_BILL"
+context = ["congressional", "cls_congressional"]
+
+[[label]]
+value = "RESOLUTION"
+constant = "RECORD_RESOLUTION"
+context = ["congressional", "cls_congressional"]
+
+[[label]]
+value = "HEARING"
+constant = "RECORD_HEARING"
+context = ["congressional", "cls_congressional"]
+
+[[label]]
+value = "AMENDMENT"
+constant = "RECORD_AMENDMENT"
+context = ["congressional", "cls_congressional"]
+
+[exclude]
+paths = ["spec1_labels.py", "test_", ".venv", "__pycache__", "node_modules", ".git"]

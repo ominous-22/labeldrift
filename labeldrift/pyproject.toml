@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "labeldrift"
+version = "0.1.0"
+description = "Find hardcoded label/enum strings that have drifted from their canonical constant definitions."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Matt" }]
+urls = { Repository = "https://github.com/mjlak1000/labeldrift" }
+keywords = ["linter", "static-analysis", "enums", "constants", "code-quality"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = ["tomli>=2.0; python_version < '3.11'"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "pytest-cov", "ruff"]
+
+[project.scripts]
+labeldrift = "labeldrift.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]

@@ -1,0 +1,17 @@
+LICENSE
+README.md
+pyproject.toml
+src/labeldrift/__init__.py
+src/labeldrift/__main__.py
+src/labeldrift/cli.py
+src/labeldrift/config.py
+src/labeldrift/scanner.py
+src/labeldrift.egg-info/PKG-INFO
+src/labeldrift.egg-info/SOURCES.txt
+src/labeldrift.egg-info/dependency_links.txt
+src/labeldrift.egg-info/entry_points.txt
+src/labeldrift.egg-info/requires.txt
+src/labeldrift.egg-info/top_level.txt
+tests/test_cli.py
+tests/test_config.py
+tests/test_scanner.py
