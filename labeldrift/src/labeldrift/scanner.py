@@ -33,7 +33,7 @@ def _string_literals(tree: ast.AST) -> list[tuple[int, str]]:
     for node in ast.walk(tree):
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
             found.append((node.lineno, node.value))
-    return found
+    return sorted(found)
 
 
 def scan_file(path: Path, cfg: LabelDriftConfig) -> list[Violation]:
